@@ -1,0 +1,19 @@
+{
+  "name": "douglas",
+  "version": "0.0.1",
+  "description": "Crud criado com ExpressJs e MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Douglashbr/CRUD-ExpressJs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Douglashbr/CRUD-ExpressJs/issues"
+  },
+  "homepage": "https://github.com/Douglashbr/CRUD-ExpressJs#readme"
+}
