@@ -80,7 +80,7 @@ app.route('/edit/:id').get((req, res) => {
     var name = req.body.name;
     var surname = req.body.surname;
 
-    db.collection('data').updateOne({ id: ObjectId(id) }, {
+    db.collection('data').updateOne({ _id: ObjectId(id) }, {
         $set: {
             name: name,
             surname: surname
@@ -98,7 +98,7 @@ app.route('/edit/:id').get((req, res) => {
 app.route('/delete/:id').get((req, res) => {
     var id = req.params.id;
 
-    db.collection('data').deleteOne({ id: ObjectId(id) }, (err, result) => {
+    db.collection('data').deleteOne({ _id: ObjectId(id) }, (err, result) => {
         if (err){
             return res.send(500, err);
         }
