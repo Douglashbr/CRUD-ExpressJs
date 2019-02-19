@@ -33,6 +33,50 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
+app.route('/edit/:id').get((req, res) => {
+    var id = req.params.id;
+
+    db.collection('data').find(ObjectId(id)).toArray((err, result) => {
+        if (err) {
+            return console.log(err);
+        }
+
+        res.render('edit.ejs', { data: result });
+    })
+}).post((req, res) => {
+    var id = req.params.id;
+    var name = req.body.name;
+    var surname = req.body.surname;
+
+    db.collection('data').updateOne({ id: ObjectId(id) }, {
+        $set: {
+            name: name,
+            surname: surname
+        }
+    }, (err, result) => {
+        if (err){
+            return console.log(err);
+        }
+
+        res.redirect('/show');
+        console.log('Atualizado no banco com sucesso');
+    })
+})
+
+app.get('/', (req, res) => {
+    var cursor = db.collection('data').find(); //RETORNA UM OBJETO COM OS DADOS DA COLEÇÃO
+});
+
+app.get('/show', (req, res) =>{
+    db.collection('data').find().toArray((err, results) => {
+        if (err){
+            return console.log(err);
+        }
+
+        res.render('show.ejs', { data: results });
+    })
+})
+
 app.post('/show', (req, res) => {
     db.collection('data').insertOne(req.body, (err, result) => {
         if (err){
@@ -40,6 +84,6 @@ app.post('/show', (req, res) => {
         }
 
         console.log('Salvo no banco de dados');
-        res.redirect('/');
-    })
+        res.redirect('/show');
+    });
 });
