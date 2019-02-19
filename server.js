@@ -1,5 +1,6 @@
 const express  = require('express');
 const MongoCliente = require('mongodb').MongoClient; //Conexão para o banco
+const ObjectId = require('mongodb').ObjectId;
 const uri = "mongodb+srv://douglasdb:121121@cluster0-2rsdh.mongodb.net/test?retryWrites=true"; //caminho para o banco adquirido no mongodb.com
 const bodyParser = require('body-parser');//MIDDLEWARE PARA UTILIZAR OS DADOS DO FORMULÁRIO
 const app = express();
@@ -7,6 +8,8 @@ const app = express();
 //urlencoded EXTRAI OS DADOS DO ELEMENTO <FORM> A ADICIONA À PROPRIEDADE BODY NO OBJETO request
 app.use(bodyParser.urlencoded({ extended: true }))
 
+
+//INICIAR O SERVIDOR SOMENTRE QUANDO ESTIVER COM CONEXÃO AO BANCO
 MongoCliente.connect(uri, (err, client) => {
     if (err){
         return console.log(err);
@@ -33,6 +36,35 @@ app.get('/', (req, res) => {
     res.render('index.ejs');
 });
 
+
+//EXIBIR TODOS OS DADOS EM UMA TABELA
+app.get('/', (req, res) => {
+    var cursor = db.collection('data').find(); //RETORNA UM OBJETO COM OS DADOS DA COLEÇÃO
+});
+
+app.get('/show', (req, res) =>{
+    db.collection('data').find().toArray((err, results) => {
+        if (err){
+            return console.log(err);
+        }
+
+        res.render('show.ejs', { data: results });
+    })
+})
+
+//SALVAR DADOS DO FORM
+app.post('/show', (req, res) => {
+    db.collection('data').insertOne(req.body, (err, result) => {
+        if (err){
+            return console.log(err);
+        }
+
+        console.log('Salvo no banco de dados');
+        res.redirect('/show');
+    });
+});
+
+//FAZER O PUT NO BANCO DE DADOS
 app.route('/edit/:id').get((req, res) => {
     var id = req.params.id;
 
@@ -57,33 +89,21 @@ app.route('/edit/:id').get((req, res) => {
         if (err){
             return console.log(err);
         }
-
         res.redirect('/show');
         console.log('Atualizado no banco com sucesso');
     })
 })
 
-app.get('/', (req, res) => {
-    var cursor = db.collection('data').find(); //RETORNA UM OBJETO COM OS DADOS DA COLEÇÃO
-});
+//FAZER O DELETE DO OBJETO
+app.route('/delete/:id').get((req, res) => {
+    var id = req.params.id;
 
-app.get('/show', (req, res) =>{
-    db.collection('data').find().toArray((err, results) => {
+    db.collection('data').deleteOne({ id: ObjectId(id) }, (err, result) => {
         if (err){
-            return console.log(err);
+            return res.send(500, err);
         }
 
-        res.render('show.ejs', { data: results });
+        res.redirect('/show');
+        console.log('Dado deletado com sucesso!');
     })
 })
-
-app.post('/show', (req, res) => {
-    db.collection('data').insertOne(req.body, (err, result) => {
-        if (err){
-            return console.log(err);
-        }
-
-        console.log('Salvo no banco de dados');
-        res.redirect('/show');
-    });
-});
